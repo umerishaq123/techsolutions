@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_geocoder/geocoder.dart';
+
+import 'package:geocoding/geocoding.dart';
 
 class convertlatlantoadres extends StatefulWidget {
   const convertlatlantoadres({super.key});
@@ -9,6 +10,8 @@ class convertlatlantoadres extends StatefulWidget {
 }
 
 class _convertlatlantoadresState extends State<convertlatlantoadres> {
+  String setaddres='';
+  String stdadd='';
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -20,29 +23,35 @@ class _convertlatlantoadresState extends State<convertlatlantoadres> {
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          Text(setaddres),
+          Text(stdadd),
           GestureDetector(
               onTap: () async {
                 ///////////////query conversion////////////////
-                final query = "1600 Amphiteatre Parkway, Mountain View";
-                var addresses =
-                    await Geocoder.local.findAddressesFromQuery(query);
-                var first = addresses.first;
-                print("${first.featureName} : ${first.coordinates}");
+                List<Location> locations =
+                    await locationFromAddress("Gronausestraat 710, Enschede");
+                     List<Placemark> placemarks =
+                    await placemarkFromCoordinates(52.2165157, 6.9437819);
 
-
+                setState(() {
+                  setaddres = locations.last.longitude.toString()+""+locations.last.latitude.toString();
+                  print("::: the address is :$setaddres");
+                  stdadd=placemarks.reversed.last.locality.toString()+"" +placemarks.reversed.last.country.toString();
+                  print(":::: $stdadd");
+                });
 //////////////////////////coordinate conversion///////////////////
-                final coordinates = new Coordinates(1.10, 45.50);
-                var addresse = await Geocoder.local
-                    .findAddressesFromCoordinates(coordinates);
-                var second = addresse.first;
-                print("${second.featureName} : ${second.addressLine}");
+
+              
               },
               child: Center(
-                child: Container(
-                    height: 40,
-                    // width: 60,
-                    decoration: BoxDecoration(color: Colors.green),
-                    child: Center(child: Text('convert'))),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Container(
+                      height: 40,
+                      // width: 60,
+                      decoration: BoxDecoration(color: Colors.green),
+                      child: Center(child: Text('convert'))),
+                ),
               )),
         ],
       ),

@@ -1,3 +1,18 @@
+buildscript {
+    ext.kotlin_version = "1.8.10"  // Define the Kotlin version
+
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "com.android.tools.build:gradle:8.0.0" // Gradle Plugin
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version" // Kotlin Gradle Plugin
+        // classpath "dev.flutter:flutter-gradle-plugin:1.0.0" // Flutter Gradle Plugin
+    }
+}
+
 allprojects {
     repositories {
         google()
@@ -5,6 +20,7 @@ allprojects {
     }
 }
 
+// Root project configurations
 rootProject.buildDir = "../build"
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
@@ -13,6 +29,7 @@ subprojects {
     project.evaluationDependsOn(":app")
 }
 
+// Clean task to delete the build directory
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
 }

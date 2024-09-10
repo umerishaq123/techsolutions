@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -29,7 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         infoWindow: InfoWindow(title: 'My current Location')),
     Marker(
-        markerId: MarkerId('1'),
+        markerId: MarkerId('2'),
         position: LatLng(34.043480656330296, 73.1407105766653),
         infoWindow: InfoWindow(title: 'Fitness freek gym')),
   ];
@@ -38,6 +39,39 @@ class _HomeScreenState extends State<HomeScreen> {
     // TODO: implement initState
 
     _marker.addAll(list);
+    loadlocation();
+  }
+
+  Future<Position> getcurrentlocation() async {
+    await Geolocator.requestPermission()
+        .then((value) {})
+        .onError((Error, StackTrace) {
+      print(":::: the eroris ${Error.toString()}");
+    });
+
+    return Geolocator.getCurrentPosition();
+  }
+
+  loadlocation(){
+        getcurrentlocation().then((value) async {
+              print(":: ${value.latitude}+" "+${value.longitude}");
+              GoogleMapController controller = await _controller.future;
+
+              _marker.add(Marker(
+                  markerId: MarkerId('3'),
+                  position: LatLng(value.latitude, value.longitude),
+                  infoWindow: InfoWindow(
+                    title: 'my current location',
+                  )));
+
+              controller.animateCamera(CameraUpdate.newCameraPosition(
+                  CameraPosition(
+                      target: LatLng(value.latitude, value.longitude),
+                      zoom: 14)));
+                      setState(() {
+                        
+                      });
+            });
   }
 
   @override
@@ -56,11 +90,25 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
-            GoogleMapController controller = await _controller.future;
-            controller.animateCamera(CameraUpdate.newCameraPosition(
-                CameraPosition(
-                    target: LatLng(34.043480656330296, 73.1407105766653),
-                    zoom: 14)));
+            getcurrentlocation().then((value) async {
+              print(":: ${value.latitude}+" "+${value.longitude}");
+              GoogleMapController controller = await _controller.future;
+
+              _marker.add(Marker(
+                  markerId: MarkerId('3'),
+                  position: LatLng(value.latitude, value.longitude),
+                  infoWindow: InfoWindow(
+                    title: 'my current location',
+                  )));
+
+              controller.animateCamera(CameraUpdate.newCameraPosition(
+                  CameraPosition(
+                      target: LatLng(value.latitude, value.longitude),
+                      zoom: 14)));
+                      setState(() {
+                        
+                      });
+            });
           },
           child: Icon(Icons.location_disabled_rounded),
         ),
